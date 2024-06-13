@@ -1,6 +1,10 @@
 import Vec3 as V
 import color as C
 import ray
+import hittable as hit
+import hittable_list as hlist
+import rtweekend
+from math import inf
 from math import sqrt
 point3 = V.vec3
 color = V.vec3
@@ -11,11 +15,10 @@ image_width = int(400)
 def copy(vec):
     return V.vec3(V.vec3.x(vec), V.vec3.y(vec), V.vec3.z(vec))
 
-def ray_color(r):
-    t = (point3(0, 0, -1), 0.7 , r)
-    if t > 0:
-        N = V.vec3.unit_vector(V.vec3.subtract(copy(ray.ray.at( r, t)), V.vec3(0, 0 ,-1)))
-        return V.vec3.divide(color(V.vec3.x(N)+1, V.vec3.y(N)+1, V.vec3.z(N)+1), 2)
+def ray_color(r, world):
+    rec = hit.hit_record()
+    if (world.hit(r, 0, inf, rec)):
+        return V.vec3.divide(V.vec3.add(rec.normal, color(1, 1, 1)), 2)
     else:
         unit_direction = V.vec3.unit_vector(ray.ray.dir(r))
         a = 0.5*(V.vec3.y(unit_direction) + 1)
@@ -27,6 +30,10 @@ def ray_color(r):
 image_height = int(image_width/aspect_ratio)
 if image_height < 1:
     image_height = 1
+
+world = hlist.hittable_list()
+world.add(hit.sphere(point3(0, 0, -1), 0.5))
+world.add(hit.sphere(point3(0, -100.5, -1), 100))
 
 #Camera
 focal_length = 1.0
@@ -60,6 +67,6 @@ for j in range(0, image_height):
         pixel_center = V.vec3.add(copy(pixel100_loc), V.vec3.add(V.vec3.constmulti(copy(pixel_delta_u), i), V.vec3.constmulti(copy(pixel_delta_v), j)))
         ray_direction = V.vec3.subtract(copy(pixel_center), copy(camera_center))
         r = ray.ray(copy(camera_center), copy(ray_direction))
-        pixel_color = ray_color(r)
+        pixel_color = ray_color(r, world)
         C.write_color(pixel_color)
 print("Done")

@@ -10,25 +10,23 @@ def copy(vec):
 
 class hit_record():
     def __init__(self):
-        self.p = point3()
-        self.normal = V.vec3()
-        self.t = float
-
-    def set_face_normal(r, outward_normal):
-        front_face = (V.vec3.dot(copy(ray.ray.dir(r)), outward_normal) < 0)
+        self.p  = point3(0, 0, 0)  
+        self.normal = V.vec3(1, 0, 0)
+        self.t = 0
+    def set_face_normal(self, r, outward_normal):
+        front_face = (V.vec3.dot(copy(ray.ray.dir(r)), copy(outward_normal)) < 0)
         if front_face:
-            normal = outward_normal
+            self.normal = outward_normal
         else:
-            normal = V.vec3.negative(outward_normal)
+            self.normal = V.vec3.negative(outward_normal)
 
 
 class sphere():
-    def sphere(self, center, radius):
+    def __init__(self, center, radius):
         self.center = center
         self.radius = radius
-    
     def hit(self, r, ray_tmin, ray_tmax, rec):
-        oc = V.vec3.subtract(copy(self.center), ray.ray.dir(r))
+        oc = V.vec3.subtract(copy(self.center), ray.ray.orig(r))
         a = V.vec3.length_squared(ray.ray.dir(r))
         h = V.vec3.dot(copy(ray.ray.dir(r)), copy(oc))
         c = V.vec3.length_squared(oc) - self.radius*self.radius
@@ -38,17 +36,15 @@ class sphere():
         sqrtd = sqrt(discriminant)
         root = (h - sqrtd) / a
         if root <= ray_tmin or root >= ray_tmax:
-            root = (h + sqrt)/a
+            root = (h + sqrtd)/a
             if root <= ray_tmin or root >= ray_tmax:
                 return False
         rec.t = root
         rec.p = r.at(rec.t)
-        rec.normal = (rec.p - copy(self.center)) /self.radius
-        outward_normal = (rec.p - copy(self.center)) / self.radius
+        rec.normal = V.vec3.divide(V.vec3.subtract(copy(rec.p), copy(self.center)), self.radius)
+        outward_normal = V.vec3.divide(V.vec3.subtract(copy(rec.p), copy(self.center)), self.radius)
         rec.set_face_normal(r, outward_normal)
         return True
-    
-
 
 
 
