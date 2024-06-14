@@ -12,9 +12,6 @@ color = V.vec3
 aspect_ratio = 16/9
 image_width = int(400)
 
-def copy(vec):
-    return V.vec3(V.vec3.x(vec), V.vec3.y(vec), V.vec3.z(vec))
-
 def ray_color(r, world):
     rec = hit.hit_record()
     if (world.hit(r, 0, inf, rec)):
@@ -46,12 +43,12 @@ viewport_u = V.vec3(viewport_width, 0, 0)
 viewport_v = V.vec3(0, -viewport_height, 0)
 
 #Calculate the horizontal and vertical delta vectors from pixel to pixel.
-pixel_delta_u = V.vec3.divide(copy(viewport_u), image_width)
-pixel_delta_v = V.vec3.divide(copy(viewport_v), image_height)
+pixel_delta_u = V.vec3.divide(viewport_u, image_width)
+pixel_delta_v = V.vec3.divide(viewport_v, image_height)
 
 #Calculate location of the upper left pixel
-viewport_upper_left = V.vec3.subtract(V.vec3.subtract(copy(camera_center), V.vec3(0, 0, focal_length)), V.vec3.divide(V.vec3.add(copy(viewport_u), copy(viewport_v)), 2))
-pixel100_loc = V.vec3.add(copy(viewport_upper_left), V.vec3.divide(V.vec3.add(copy(pixel_delta_u), copy(pixel_delta_v)), 2))
+viewport_upper_left = V.vec3.subtract(V.vec3.subtract(camera_center, V.vec3(0, 0, focal_length)), V.vec3.divide(V.vec3.add(viewport_u, viewport_v), 2))
+pixel100_loc = V.vec3.add(viewport_upper_left, V.vec3.divide(V.vec3.add(pixel_delta_u, pixel_delta_v), 2))
 
 
 
@@ -64,9 +61,9 @@ f.close()
 for j in range(0, image_height):
     print("Scanline remaining: " + str(image_height - j))
     for i in range(0, image_width):
-        pixel_center = V.vec3.add(copy(pixel100_loc), V.vec3.add(V.vec3.constmulti(copy(pixel_delta_u), i), V.vec3.constmulti(copy(pixel_delta_v), j)))
-        ray_direction = V.vec3.subtract(copy(pixel_center), copy(camera_center))
-        r = ray.ray(copy(camera_center), copy(ray_direction))
+        pixel_center = V.vec3.add(pixel100_loc, V.vec3.add(V.vec3.constmulti(pixel_delta_u, i), V.vec3.constmulti(pixel_delta_v, j)))
+        ray_direction = V.vec3.subtract(pixel_center, camera_center)
+        r = ray.ray(camera_center, ray_direction)
         pixel_color = ray_color(r, world)
         C.write_color(pixel_color)
 print("Done")
