@@ -6,8 +6,8 @@ point3 = V.vec3
 
 class hit_record():
     def __init__(self):
-        self.p  = point3(0, 0, 0)  
-        self.normal = V.vec3(1, 0, 0)
+        self.p  = V.vec3(0, 0, 0)
+        self.normal = V.vec3(0, 0, 0)
         self.t = 0
     def set_face_normal(self, r, outward_normal):
         front_face = (V.vec3.dot(ray.ray.dir(r), outward_normal) < 0)

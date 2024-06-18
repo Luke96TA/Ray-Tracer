@@ -14,7 +14,9 @@ image_width = int(400)
 
 def ray_color(r, world):
     rec = hit.hit_record()
-    if (world.hit(r, 0, inf, rec)):
+    
+    res, rec = world.hit(r, 0, inf, rec)
+    if res:
         return V.vec3.divide(V.vec3.add(rec.normal, color(1, 1, 1)), 2)
     else:
         unit_direction = V.vec3.unit_vector(ray.ray.dir(r))

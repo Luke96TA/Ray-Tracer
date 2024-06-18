@@ -16,5 +16,5 @@ class hittable_list():
             if hittable.sphere.hit(object, r, ray_tmin, closest_so_far, temp_rec):
                 hit_anything = True
                 closest_so_far = temp_rec.t
-                rec = temp_rec  
-        return hit_anything
+                rec = temp_rec
+        return hit_anything, rec
